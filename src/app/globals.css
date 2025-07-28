@@ -5,6 +5,15 @@
   --foreground: #171717;
 }
 
+@font-face {
+  font-family: SourceCodePro Med;
+  src: url("./fonts/static/SourceCodePro-Medium.ttf");
+}
+
+@theme {
+  --font-monospace: "SourceCodePro Med";
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
