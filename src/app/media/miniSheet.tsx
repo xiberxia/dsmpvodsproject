@@ -1,4 +1,4 @@
-let vods = [
+const Vods = [
 {id: 0,date: "4/24/2020",cid: 1,creator: "Dream",title: "Minecraft 1.16 survival",archiver: "CameronMan",archiveLink: "https://archive.org/details/twitcharchive.dreamwastaken.Minecraft_1_16_survival",youtubeRestorer: "",youtubeLink: "https://www.youtube.com/watch?v=lsYbGIyzVIE",notesOne: "",notesOneLink: "",notesTwo: "",notesTwoLink: "",isAlt: false},
 {id: 1,date: "4/25/2020",cid: 2,creator: "GeorgeNotFound",title: "Minecraft Survival 1.16 Snapshot",archiver: "Rogue123987",archiveLink: "https://archive.org/details/minecraft-survival-1.16-snapshot-partially-missing-georgenotfound-2020.04.24",youtubeRestorer: "",youtubeLink: "https://www.youtube.com/watch?v=BTCg08-v9Rk",notesOne: "",notesOneLink: "",notesTwo: "",notesTwoLink: "",isAlt: false},
 {id: 2,date: "4/28/2020",cid: 2,creator: "GeorgeNotFound",title: "Minecraft Survival 1.16 Snapshot AGAIN",archiver: "Rogue123987",archiveLink: "https://archive.org/details/minecraft-survival-1.16-snapshot-again-partially-missing-georgenotfound-2020.04.28",youtubeRestorer: "",youtubeLink: "https://www.youtube.com/watch?v=o6rapBiteH8",notesOne: "",notesOneLink: "",notesTwo: "",notesTwoLink: "",isAlt: false},
@@ -15,4 +15,5 @@ let vods = [
 {id: 13,date: "5/8/2020",cid: 4,creator: "Sapnap",title: "Simpnap v4?",archiver: "",archiveLink: "",youtubeRestorer: "",youtubeLink: "https://www.youtube.com/watch?v=Ri1DEsqtlcw",notesOne: "",notesOneLink: "",notesTwo: "",notesTwoLink: "",isAlt: false},
 {id: 14,date: "5/10/2020",cid: 2,creator: "GeorgeNotFound",title: "Random Minecraft Memes",archiver: "Rogue123987",archiveLink: "https://archive.org/details/random-minecraft-memes-georgenotfound-2020.05.10",youtubeRestorer: "",youtubeLink: "https://www.youtube.com/watch?v=K1F_t1DWwsk",notesOne: "",notesOneLink: "",notesTwo: "",notesTwoLink: "",isAlt: false},
 {id: 15,date: "5/10/2020",cid: 1,creator: "Dream",title: "Minecraft speedruns 1.14",archiver: "Rogue123987",archiveLink: "https://archive.org/details/minecraft-speedruns-1.14-dreamwastaken-2020.05.10",youtubeRestorer: "",youtubeLink: "https://www.youtube.com/watch?v=xc75h2ShOhI",notesOne: "",notesOneLink: "",notesTwo: "",notesTwoLink: "",isAlt: false},
-]
+];
+export default Vods;
