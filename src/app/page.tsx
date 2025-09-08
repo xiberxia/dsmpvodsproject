@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div>
 			<div className="bg-red-700 h-200 font-monospace">
-				<p> hello world </p>
+				<p> hello woorld </p>
 					
 
 
