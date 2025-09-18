@@ -1,57 +1,86 @@
 "use client"
-import { useState } from "react";
-import VodsRow from "./components/renderTable"
-import vods from "./media/miniSheet";
-
-function CreateRows( singleVod ) {
-  const [ vodOpen, setVodOpen ] = useState(false);
-  return (
-             
-      [ <div className="table-row" onClick={e => setVodOpen(!vodOpen)}>
-            <div className="table-cell">{singleVod.id}</div>
-            <div className="table-cell">{singleVod.date}</div>
-            <div className="table-cell">{singleVod.creator}</div>
-            <div className="table-cell">{singleVod.title}</div>
-            <div className="table-cell">{singleVod.isAlt.toString()}</div>
-          </div>,
-        <div>
-        <div className={ vodOpen ? "hidden" : "" }>
-          <p>hllo world</p>
-        </div>
-
-
-      </div>
-      ]
-   )
-}
+import { useState } from 'react';
+import vods from "./media/dsmpVodsMasterSheet";
+import ReactPaginate from 'react-paginate';
 
 export default function Home() {
-	console.log(vods);
+  var vodsInUse = vods;
+/**
+  const [ viewBy, setViewBy ] = useState("all");
+  const [ sortBy, setSortBy ] = useState("pure chronological");
+  const [ includeCr, setIncludeCr ] = useState([]);
+  const [ excludeCr, setExcludeCr ] = useState([]);
+
+  function sortViewBy( viewBy:String ) {
+    
+  }
+**/
+/**const Pagination = ({vodsPerPage, totalVods, setCurrentPage, currentPage}) => {
+    const pageNumbers = [];
+    for ( var i = 1; i*vodsPerPage <= totalVods ; i++) {
+      pageNumbers.push(i);
+
+    }
+    const paginate = (pageNumber, e) => {
+      e.preventDefault();
+      setCurrentPage(pageNumber);
+    };
+  return (
+  )
+  }
+**/
+  const totalVods = vodsInUse.length;
+  const [ vodsPerPage, setVodsPerPage ] = useState(50);
+  const [ currentPage, setCurrentPage ] = useState(0);
+
+  var totalPages = 61;
+/**  function getTotalPages( vodsPerPage ) {
+    totalPages = Math.round((totalVods / vodsPerPage)+1);
+  }**/
+  function makeRow( singleVod ) {
+    const [ rowExpand, setRowExpand ] = useState(false);
+    return [
+      <tr key={singleVod.id} onClick={() => setRowExpand(!rowExpand)}>
+        <td>{singleVod.id}</td>
+        <td>{singleVod.date}</td>
+        <td>{singleVod.creator}</td>
+        <td>{singleVod.title}</td>
+        <td>{singleVod.isAlt.toString()}</td>
+      </tr>,
+      rowExpand && (
+      <tr key={singleVod.id + 10000}>
+        <td colSpan={5} >
+          <p>IA: {singleVod.archiveLink}</p>
+          <p>IA archiver: {singleVod.archiver}</p>
+        </td>
+      </tr>
+      
+      )
+    ]
+  }
+  
 
   return (
-
     <div>
-			<div className="bg-red-700 h-200 font-monospace">
-				<p> hello world </p>
+      
+    
+      <div className="bg-slate-900 h-200 font-monospace">
 				
-        <div className="table">
-          <div className="table-header-group">
-            <div className="table-row">{Object.keys(vods[0]).map((key) => { if (!(key == "cid" || (key.includes("archive")) || (key.includes("youtube")) || (key.includes("notes")) ))  return <div className="table-cell border">{key}</div>
+        <table className="m-6">
+          <thead>
+
+            <tr>{Object.keys(vodsInUse[0]).map((key) => { if (!(key == "cid" || (key.includes("archive")) || (key.includes("youtube")) || (key.includes("notes")) ))  return <th key={key} className="border">{key}</th>
               })}
-            </div>
-          </div>
-          
-          <div className="table-row-group">
-            {vods.map(( singleVod ) => (
-              CreateRows(singleVod)
-            ))}
-          </div>
-        </div>
+            </tr>
+          </thead>
+          <tbody>
+            {vodsInUse.map((singleVod) => (
+             makeRow(singleVod) 
+           ))}
+          </tbody>
 
-        
-
-
-			</div>
+        </table>
+	    </div>
       <p className="bg-red-400 h-screen">hello world </p>
     </div>
   );

@@ -102,7 +102,42 @@ export default function Navbar() {
         </ul>
       </div>
       
+      <div>
+        <div className="m-2 font-monospace">
+          View By: 
+          <select className="m-2">
+            <option value="viewAll">all</option>
+            <option value="viewStory">story only</option>
+            <option value="viewChill">chill streams</option>
+          </select>
+        </div>
+       <div className="m-2 font-monospace ">
+          Sort By:
+            <select className="m-2 my-0">
+              <option className="font-monospace">pure chonological</option>
+              <option className="font-monospace">content creator (a-z)</option>
+              <option className="font-monospace">content creator (chrono)</option>
+              <option className="font-monospace">title (a-z)</option>
+            </select>
+        </div>
+        <div className="m-2 font-monospace">
+          Include Creators:
+            <select className="m-2 my-0">
+              <option></option>
 
+            </select>
+        </div>
+        <div className="m-2 font-monospace">
+          Exclude Creators:
+            <select className="m-2 my-0">
+              <option></option>
+
+            </select>
+        </div>
+
+
+
+      </div>
         
     </nav>
   );
