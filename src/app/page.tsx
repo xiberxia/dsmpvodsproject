@@ -16,9 +16,11 @@ function MakeRow( singleVod ) {
         <div className="table-cell">{singleVod.isAlt.toString()}</div>
       </div>,
       rowExpand && (
-      <div className="table-row flex" key={singleVod.id + 10000}>
-          <p className="flex-grow">IA: {singleVod.archiveLink}</p>
+      <div className="table-row "  key={singleVod.id + 10000}>
+        <div className="table-cell col-span-5" colSpan={5} >
+          <p className="">IA: {singleVod.archiveLink}</p>
           <p>IA archiver: {singleVod.archiver}</p>
+        </div>
       </div>
       
       )
@@ -107,6 +109,7 @@ export default function Home() {
     totalPages = Math.round((totalVods / vodsPerPage)+1);
   }**/
   
+
   return (
     <div>
       
