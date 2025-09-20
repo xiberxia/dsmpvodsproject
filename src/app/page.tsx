@@ -16,8 +16,8 @@ function MakeRow( singleVod ) {
         <div className="table-cell">{singleVod.isAlt.toString()}</div>
       </div>,
       rowExpand && (
-      <div className="table-row "  key={singleVod.id + 10000}>
-        <div className="table-cell col-span-5" colSpan={5} >
+      <div className="table-row" key={singleVod.id + 10000}>
+        <div className="table-cell colspan-5" colSpan={5} >
           <p className="">IA: {singleVod.archiveLink}</p>
           <p>IA archiver: {singleVod.archiver}</p>
         </div>
