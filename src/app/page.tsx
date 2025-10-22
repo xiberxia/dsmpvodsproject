@@ -1,80 +1,40 @@
 "use client"
 import { useState } from 'react';
 import vods from "./media/dsmpVodsMasterSheet";
-import ReactPaginate from 'react-paginate';
 
 var vodsInUse = vods;
 
-function MakeRow( singleVod ) {
-    const [ rowExpand, setRowExpand ] = useState(false);
-    return [
-      <div key={singleVod.id} className="table-row" onClick={() => setRowExpand(!rowExpand)}>
-        <div className="table-cell">{singleVod.id}</div>
-        <div className="table-cell">{singleVod.date}</div>
-        <div className="table-cell">{singleVod.creator}</div>
-        <div className="table-cell">{singleVod.title}</div>
-        <div className="table-cell">{singleVod.isAlt.toString()}</div>
-      </div>,
-      rowExpand && (
-      <div className="table-row" key={singleVod.id + 10000}>
-        <div className="table-cell colspan-5" colSpan={5} >
-          <p className="">IA: {singleVod.archiveLink}</p>
-          <p>IA archiver: {singleVod.archiver}</p>
-        </div>
-      </div>
-      
-      )
-    ]
+
+ 
+var paginationDisplay = []
+function Pagination(vodsPerPage, totalVods, currentPage) {
+  const startPageNumbers = [];
+  const middlePageNumbers = [];
+  const endPageNumbers = [];
+  const totalPages = Math.round((totalVods / vodsPerPage)+1);
+
+  if (currentPage <= 3) {
+    startPageNumbers.push(1,2,3,4);
+
+  } else {
+    startPageNumbers.push(1);
   }
   
+  if (currentPage > 3 && currentPage < (totalPages- 2)) {
+    middlePageNumbers.push(currentPage-1, currentPage, currentPage+1);
+  }
 
-function Items({ currentVods }) {
-  return (
-    <>
-      {currentVods.map((singleVod) => (
-        MakeRow(singleVod) 
-      ))}
-    </>
-  );
+  if (currentPage > (totalPages - 3)) {
+    endPageNumbers.push(totalPages-3, totalPages-2, totalPages-1, totalPages)
+  } else {
+    endPageNumbers.push(totalPages)
+  }
+  return(
+    [startPageNumbers,middlePageNumbers,endPageNumbers]
+  )
 }
 
-function PaginatedItems({ vodsPerPage }) {
-  // Here we use item offsets; we could also use page offsets
-  // following the API or data you're working with.
-  const [itemOffset, setItemOffset] = useState(0);
 
-  // Simulate fetching items from another resources.
-  // (This could be items from props; or items loaded in a local state
-  // from an API endpoint with useEffect and useState)
-  const endOffset = itemOffset + vodsPerPage;
-  console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-  const currentVods = vodsInUse.slice(itemOffset, endOffset);
-  const pageCount = Math.ceil(vodsInUse.length / vodsPerPage);
-
-  // Invoke when user click to request another page.
-  const handlePageClick = (event) => {
-    const newOffset = (event.selected * vodsPerPage) % vodsInUse.length;
-    console.log(
-      `User requested page number ${event.selected}, which is offset ${newOffset}`
-    );
-    setItemOffset(newOffset);
-  };
-
-  return (
-    <>
-      <Items currentVods={currentVods} />
-      <ReactPaginate
-        breakLabel="..."
-        nextLabel="next >"
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={5}
-        pageCount={pageCount}
-        previousLabel="< previous"
-        renderOnZeroPageCount={null}
-      />
-    </>
-  );
-}
 export default function Home() {
 /**
   const [ viewBy, setViewBy ] = useState("all");
@@ -86,47 +46,86 @@ export default function Home() {
     
   }
 **/
-/**const Pagination = ({vodsPerPage, totalVods, setCurrentPage, currentPage}) => {
-    const pageNumbers = [];
-    for ( var i = 1; i*vodsPerPage <= totalVods ; i++) {
-      pageNumbers.push(i);
-
-    }
-    const paginate = (pageNumber, e) => {
-      e.preventDefault();
-      setCurrentPage(pageNumber);
-    };
-  return (
-  )
-  }
-**/
-  const totalVods = vodsInUse.length;
-  const [ vodsPerPage, setVodsPerPage ] = useState(50);
-  const [ currentPage, setCurrentPage ] = useState(0);
-
-  var totalPages = 61;
-/**  function getTotalPages( vodsPerPage ) {
-    totalPages = Math.round((totalVods / vodsPerPage)+1);
-  }**/
+  // totalVods=vodsInUse.length
   
 
+  const totalVods = vodsInUse.length;
+  const [ vodsPerPage, setVodsPerPage ] = useState(50);
+  const [ currentPage, setCurrentPage ] = useState(61);
+  const initRowExpandStates = [];
+  for (var i = 0; i < vodsPerPage; i++) {
+    initRowExpandStates.push(false);
+  }
+  const [ rowExpand, setRowExpand ] = useState(initRowExpandStates);
+  
+  function MakeRow( singleVod, index ) {
+    
+
+    return [
+      <tr key={singleVod.id}  onClick={() => setRowExpand(rowExpand[index])}>
+        <td >{singleVod.id}</td>
+        <td >{singleVod.date}</td>
+        <td >{singleVod.creator}</td>
+        <td >{singleVod.title}</td>
+        <td >{singleVod.isAlt.toString()}</td>
+      </tr>,
+      rowExpand && (
+      <tr  key={singleVod.id + 10000}>
+        <td  colSpan={5} >
+          <p className="">IA: {singleVod.archiveLink}</p>
+          <p>IA archiver: {singleVod.archiver}</p>
+        </td>
+      </tr>
+      
+      )
+    ]
+  }
+ 
+
+  var totalPages = 61;
+  function getTotalPages( vodsPerPage ) {
+    totalPages = Math.round((totalVods / vodsPerPage)+1);
+  }
+  console.log(totalPages);
+  
+
+  function getCurrentVods( vodsPerPage, currentPage, vodsInUse ) {
+    const displayedVods = [];
+    for (var i=0;i<vodsPerPage;i++) {
+      if (((vodsPerPage * (currentPage-1)) + i) <= vodsInUse.length-1) {
+        displayedVods.push(vodsInUse[(vodsPerPage * (currentPage-1)) + i]);
+      }
+    }
+    console.log(displayedVods);
+    return (
+      displayedVods
+    )
+  }
+  const paginationKey = Pagination(vodsPerPage, totalVods, currentPage);
+  
   return (
     <div>
-      
-    
+    <div className="flex">
+      {paginationKey[0].map((pageNumber) => (<button className="border m-2 px-2 font-monospace" onClick={() => setCurrentPage(pageNumber)}>{pageNumber}</button>) )}
+      {paginationKey[1].length >= 1 && <div className="border m-2 px-2 font-monospace" >...</div>}
+      {paginationKey[1].map((pageNumber) => (<button className="border m-2 px-2 font-monospace" onClick={() => setCurrentPage(pageNumber)}>{pageNumber}</button>))}
+      <div className="border m-2 px-2 font-monospace">...</div>
+      {paginationKey[2].map((pageNumber) => (<button className="border m-2 px-2 font-monospace" onClick={() => setCurrentPage(pageNumber)}>{pageNumber}</button>))}
+    </div>  
       <div className="bg-slate-900 h-200 font-monospace">
 				
-        <div className="table m-6">
-          <div className="table-header-group">
+        <table className="m-6">
+          <thead >
 
-            <div className="table-row">{Object.keys(vodsInUse[0]).map((key) => { if (!(key == "cid" || (key.includes("archive")) || (key.includes("youtube")) || (key.includes("notes")) ))  return <div key={key} className="table-cell border">{key}</div>
+            <tr >{Object.keys(vodsInUse[0]).map((key) => { if (!(key == "cid" || (key.includes("archive")) || (key.includes("youtube")) || (key.includes("notes")) ))  return <th key={key} className="border">{key}</th>
               })}
-            </div>
-          </div>
-          <div className="table-row-group">
-            <PaginatedItems vodsPerPage={40} />
-          </div>
-        </div>
+            </tr>
+          </thead>
+          <tbody >
+              {getCurrentVods(vodsPerPage, currentPage, vodsInUse).map((singleVod, index) => (MakeRow(singleVod, index)))}
+ 
+          </tbody>
+        </table>
 	  </div>
     <p className="bg-red-400 h-screen">hello world </p>
     </div>
