@@ -3,7 +3,19 @@ import { useState, useEffect } from 'react';
 import vods from "./media/dsmpVodsMasterSheet";
 
 var vodsInUse = vods;
+type VodsType = {
+    id: number;    date: string;    cid: number;    creator: string;    title: string;
+    archiver: string;    archiveLink: string;    youtubeRestorer: string;
+    youtubeLink: string;    notesOne: string;    notesOneLink: string;
+    notesTwo: string;    notesTwoLink: string;    isAlt: boolean;
+}[]
 
+type SingleVodType = {
+    id: number;    date: string;    cid: number;    creator: string;    title: string;
+    archiver: string;    archiveLink: string;    youtubeRestorer: string;
+    youtubeLink: string;    notesOne: string;    notesOneLink: string;
+    notesTwo: string;    notesTwoLink: string;    isAlt: boolean;
+}
 
 var paginationDisplay = []
 function Pagination(vodsPerPage: number, totalVods: number, currentPage: number) {
@@ -33,7 +45,7 @@ function Pagination(vodsPerPage: number, totalVods: number, currentPage: number)
     )
 }
 
-const totalVods = vodsInUse.length;
+var totalVods = vodsInUse.length;
 
 export default function Home() {
     /**
@@ -47,6 +59,100 @@ export default function Home() {
       }
      **/
     // totalVods=vodsInUse.length
+
+    // FILTER TABLE
+
+    // SORT TABLE
+    // id, dat, crt, ttl, alt - sort table rows
+    const [ sortBy, setSortBy ] = useState(["id", false]);
+
+    function setSort(thingy: string) {
+        var thingyBool = false;
+        if (sortBy[0] === thingy) {
+            thingyBool = !(sortBy[1]);
+
+        }
+
+        setSortBy([thingy, thingyBool]);
+        console.log(sortBy);
+        sortTable( vodsInUse );
+    }
+
+    {/* TODO: FIX ERRANEOUS BEHAVIOR WHEN MULTIPLE COLUMNS ARE SORTED */}
+    function sortTable( vodsInUse: VodsType ) {
+        switch (sortBy[0]) {
+            case "id": {
+                if (sortBy[1]) {
+                    vodsInUse.sort((a, b) => a.id - b.id);
+                } else {
+                    vodsInUse.sort((a, b) => b.id - a.id);
+                }
+                break;
+            }
+
+            case "dat": {
+                vodsInUse.sort((a, b) => {
+                    var thingA = a.date.split("/");
+                    var thingB = b.date.split("/");
+
+                    if (a.date.localeCompare(b.date)) {
+                        return 0;
+
+                    } else if (parseInt(thingA[2]) < parseInt(thingB[2])) {
+                        return sortBy[1] ? 1 : -1;
+
+                    } else if (parseInt(thingA[1]) < parseInt(thingB[1])) {
+                        return sortBy[1] ? 1 : -1;
+
+                    } else if (parseInt(thingA[0]) < parseInt(thingB[0])) {
+                        return sortBy[1] ? 1 : -1;
+
+                    } else {
+                       return sortBy[1] ? -1 : 1;
+
+                    }
+                })
+                break;
+            }
+
+            case "crt": {
+                vodsInUse.sort((a, b) => {
+                    const tempA = a.creator.toUpperCase();
+                    const tempB = b.creator.toUpperCase();
+                    console.log(tempA);
+                    return sortBy[1] ? (tempA.localeCompare(tempB)) : (tempB.localeCompare(tempA));
+
+                })
+            }
+
+            case "ttl": {
+                vodsInUse.sort((a, b) => {
+                    const tempC = a.title.toUpperCase();
+                    const tempD = b.title.toUpperCase();
+                    return sortBy[1] ? (tempC.localeCompare(tempD)) : (tempD.localeCompare(tempC));
+
+                })
+            }
+
+            case "alt": {
+                vodsInUse.sort((a, b) => {
+                    if ((a.isAlt && b.isAlt) || !(a.isAlt && b.isAlt)) {
+                        return 0;
+
+                    } else if (a.isAlt && !(b.isAlt)) {
+                        return sortBy[1] ? 1 : -1;
+
+                    } else {
+                        return sortBy[1] ? -1 : 1;
+
+                    }
+
+                })
+            }
+
+        }
+
+    }
 
 
     {/* default number vods per page */}
@@ -69,24 +175,31 @@ export default function Home() {
     }
 
 
-    function MakeRow( singleVod, index: number ) {
 
-
+    function MakeRow( singleVod: SingleVodType, index: number ) {
+        
         return [
-            <tr key={singleVod.id}  onClick={() => {changeRowStates(index)}}>
-                <td >{singleVod.id}</td>
-                <td >{singleVod.date}</td>
-                <td >{singleVod.creator}</td>
-                <td >{singleVod.title}</td>
-                <td >{singleVod.isAlt.toString()}</td>
-            </tr>,
+            <div key={singleVod.id} className="grid grid-cols-20 col-span-20 ">
+                <div onClick={() => {changeRowStates(index)}} 
+                    className="col-start-1">{singleVod.id}</div>
+                <div onClick={() => {changeRowStates(index)}}
+                    className="col-start-2 col-span-2">{singleVod.date}</div>
+                <div onClick={() => {changeRowStates(index)}}
+                    className="col-start-4 col-span-3">{singleVod.creator}</div>
+                <div onClick={() => {changeRowStates(index)}}
+                    className="col-start-7 col-end-20 truncate text-ellipsis">{singleVod.title}</div>
+                <div onClick={() => {changeRowStates(index)}}
+                    className="">{singleVod.isAlt.toString()}</div>
+            </div>
+            ,
             rowExpand[index] && (
-                <tr  key={singleVod.id + 10000}>
-                    <td  colSpan={5} >
+
+
+                /* MAKE FOR DIFFEERENT SCREEN SIZES */
+                <div className="col-span-20">
                     <p className="">IA: {singleVod.archiveLink}</p>
                     <p>IA archiver: {singleVod.archiver}</p>
-                </td>
-                </tr>
+                </div>
 
             )
         ]
@@ -99,7 +212,7 @@ export default function Home() {
     }
 
 
-    function getCurrentVods( vodsPerPage: number, currentPage: number, vodsInUse ) {
+    function getCurrentVods( vodsPerPage: number, currentPage: number, vodsInUse: VodsType ) {
         const displayedVods = [];
         for (var i=0;i<vodsPerPage;i++) {
             if (((vodsPerPage * (currentPage-1)) + i) <= vodsInUse.length-1) {
@@ -143,57 +256,57 @@ export default function Home() {
 
         </div> 
 
-        <div className="bg-slate-900 h-full p-6 flex font-monospace">
+        <div className="bg-slate-900 h-full p-6 grid grid-cols-20 font-monospace">
+        {/* todo: make everything keyboard interactable*/}
+        {/* todo: make screen size interactable + navbar slidable + ellipses text*/}
     
-            <table className="table-fixed flex-grow">
-                <thead className="">
     
-                <tr className="">
-                    <th className="border ">id</th>
-                    <th className="border ">date</th>
-                    <th className="border ">creator</th>
-                    <th className="border ">title</th>
-                    <th className="border ">isAlt</th>
-
-                </tr>
-                </thead>
-                <tbody >
-                    {getCurrentVods(vodsPerPage, currentPage, vodsInUse).map((singleVod, index) => 
-                        (MakeRow(singleVod, index)))}
-    
-                </tbody>
-            </table>
-    
+                <div className="border block " 
+                    onClick={() => {setSort("id")}}>id</div>
+                <div className="border col-span-2"
+                    onClick={() => {setSort("dat")}}>date</div>
+                <div className="border col-start-4 col-span-3"
+                    onClick={() => {setSort("crt")}}>creator</div >
+                <div className="border col-start-7 col-end-20 "
+                   onClick={() => {setSort("ttl")}} >title</div>
+                <div className="border block"
+                    onClick={() => {setSort("alt")}}>isAlt</div>
+                {getCurrentVods(vodsPerPage, currentPage, vodsInUse).map((singleVod, index) => 
+                    (MakeRow(singleVod, index)))}
+ 
         </div>
-    
-            {/* pagination */}
-            <div className="flex">
-                {/* front few numbers */}
-                {paginationKey[0].map((pageNumber) => 
-                    (<button key={pageNumber} className="border m-2 px-2 font-monospace" 
-                     onClick={() => {setCurrentPage(pageNumber); 
-                     setRowExpand(initRowExpandStates)}}>{pageNumber}</button>) )}
 
-                {/* ... */}
+   
     
-                {paginationKey[1].length >= 1 && 
-                    <div className="border m-2 px-2 font-monospace" >...</div>}
-                {/* middle numbers */}
-                {paginationKey[1].map((pageNumber) => 
-                    (<button key={pageNumber} className="border m-2 px-2 font-monospace" 
-                     onClick={() => {setCurrentPage(pageNumber); 
-                     setRowExpand(initRowExpandStates)}}>{pageNumber}</button>) )}
-
-                {/* ... */}
     
-                <div className="border m-2 px-2 font-monospace">...</div>
-                {/* last few numbers */}
-                {paginationKey[2].map((pageNumber) => 
-                    (<button key={pageNumber} className="border m-2 px-2 font-monospace" 
-                     onClick={() => {setCurrentPage(pageNumber); 
-                     setRowExpand(initRowExpandStates)}}>{pageNumber}</button>) )}
+        {/* pagination */}
+        <div className="flex">
+            {/* front few numbers */}
+            {paginationKey[0].map((pageNumber) => 
+                (<button key={pageNumber} className="border m-2 px-2 font-monospace" 
+                    onClick={() => {setCurrentPage(pageNumber); 
+                    setRowExpand(initRowExpandStates)}}>{pageNumber}</button>) )}
 
-            </div> 
+            {/* ... */}
+    
+            {paginationKey[1].length >= 1 && 
+                <div className="border m-2 px-2 font-monospace" >...</div>}
+            {/* middle numbers */}
+            {paginationKey[1].map((pageNumber) => 
+                (<button key={pageNumber} className="border m-2 px-2 font-monospace" 
+                    onClick={() => {setCurrentPage(pageNumber); 
+                    setRowExpand(initRowExpandStates)}}>{pageNumber}</button>) )}
+
+            {/* ... */}
+    
+            <div className="border m-2 px-2 font-monospace">...</div>
+            {/* last few numbers */}
+            {paginationKey[2].map((pageNumber) => 
+                (<button key={pageNumber} className="border m-2 px-2 font-monospace" 
+                    onClick={() => {setCurrentPage(pageNumber); 
+                    setRowExpand(initRowExpandStates)}}>{pageNumber}</button>) )}
+
+        </div> 
 
     
         </div>
