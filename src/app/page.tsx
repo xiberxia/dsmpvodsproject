@@ -78,6 +78,7 @@ export default function Home() {
         sortTable( vodsInUse );
     }
 
+
     {/* TODO: FIX ERRANEOUS BEHAVIOR WHEN MULTIPLE COLUMNS ARE SORTED */}
     function sortTable( vodsInUse: VodsType ) {
         switch (sortBy[0]) {
