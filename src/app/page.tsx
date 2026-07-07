@@ -4,20 +4,19 @@ import vods from "./media/dsmpVodsMasterSheet";
 
 var vodsInUse = vods;
 type VodsType = {
-    id: number;    date: string;    cid: number;    creator: string;    title: string;
+    id: number;    date: Date;    cid: number;    creator: string;    title: string;
     archiver: string;    archiveLink: string;    youtubeRestorer: string;
     youtubeLink: string;    notesOne: string;    notesOneLink: string;
     notesTwo: string;    notesTwoLink: string;    isAlt: boolean;
 }[]
 
 type SingleVodType = {
-    id: number;    date: string;    cid: number;    creator: string;    title: string;
+    id: number;    date: Date;    cid: number;    creator: string;    title: string;
     archiver: string;    archiveLink: string;    youtubeRestorer: string;
     youtubeLink: string;    notesOne: string;    notesOneLink: string;
     notesTwo: string;    notesTwoLink: string;    isAlt: boolean;
 }
 
-var paginationDisplay = []
 function Pagination(vodsPerPage: number, totalVods: number, currentPage: number) {
     const startPageNumbers = [];
     const middlePageNumbers = [];
@@ -64,23 +63,22 @@ export default function Home() {
 
     // SORT TABLE
     // id, dat, crt, ttl, alt - sort table rows
-    const [ sortBy, setSortBy ] = useState(["id", false]);
+    const [ sortBy, setSortBy ] = useState(["nom", false]);
 
-    function setSort(thingy: string) {
-        var thingyBool = false;
-        if (sortBy[0] === thingy) {
-            thingyBool = !(sortBy[1]);
+    function setSort() {
+        var thingyBool = !(sortBy[1]);
+        var thingy = "id";
 
-        }
-
+        console.log(sortBy[0] + ", " + sortBy[1] + " | " + thingy);
         setSortBy([thingy, thingyBool]);
-        console.log(sortBy);
         sortTable( vodsInUse );
+        console.log(sortBy[0] + ", " + sortBy[1] + " sorted");
     }
 
 
     {/* TODO: FIX ERRANEOUS BEHAVIOR WHEN MULTIPLE COLUMNS ARE SORTED */}
     function sortTable( vodsInUse: VodsType ) {
+        console.log("sorting with: " + sortBy[0]);
         switch (sortBy[0]) {
             case "id": {
                 if (sortBy[1]) {
@@ -92,27 +90,15 @@ export default function Home() {
             }
 
             case "dat": {
-                vodsInUse.sort((a, b) => {
-                    var thingA = a.date.split("/");
-                    var thingB = b.date.split("/");
-
-                    if (a.date.localeCompare(b.date)) {
-                        return 0;
-
-                    } else if (parseInt(thingA[2]) < parseInt(thingB[2])) {
-                        return sortBy[1] ? 1 : -1;
-
-                    } else if (parseInt(thingA[1]) < parseInt(thingB[1])) {
-                        return sortBy[1] ? 1 : -1;
-
-                    } else if (parseInt(thingA[0]) < parseInt(thingB[0])) {
-                        return sortBy[1] ? 1 : -1;
-
-                    } else {
-                       return sortBy[1] ? -1 : 1;
-
-                    }
-                })
+                if (sortBy[1]) {
+                    vodsInUse.sort((a, b) => {
+                        return -a.date.getTime() + b.date.getTime();
+                    })
+                } else {
+                    vodsInUse.sort((a, b) => {
+                        return -b.date.getTime() + a.date.getTime();
+                    })
+                }
                 break;
             }
 
@@ -124,6 +110,7 @@ export default function Home() {
                     return sortBy[1] ? (tempA.localeCompare(tempB)) : (tempB.localeCompare(tempA));
 
                 })
+                break;
             }
 
             case "ttl": {
@@ -133,6 +120,7 @@ export default function Home() {
                     return sortBy[1] ? (tempC.localeCompare(tempD)) : (tempD.localeCompare(tempC));
 
                 })
+                break;
             }
 
             case "alt": {
@@ -184,7 +172,7 @@ export default function Home() {
                 <div onClick={() => {changeRowStates(index)}} 
                     className="col-start-1">{singleVod.id}</div>
                 <div onClick={() => {changeRowStates(index)}}
-                    className="col-start-2 col-span-2">{singleVod.date}</div>
+                    className="col-start-2 col-span-2">{singleVod.date.toLocaleDateString()}</div>
                 <div onClick={() => {changeRowStates(index)}}
                     className="col-start-4 col-span-3">{singleVod.creator}</div>
                 <div onClick={() => {changeRowStates(index)}}
@@ -193,11 +181,11 @@ export default function Home() {
                     className="">{singleVod.isAlt.toString()}</div>
             </div>
             ,
-            rowExpand[index] && (
+            rowExpand[index] && singleVod.archiveLink && (
 
 
                 /* MAKE FOR DIFFEERENT SCREEN SIZES */
-                <div className="col-span-20">
+                <div key={singleVod.archiveLink} className="col-span-20">
                     <p className="">IA: {singleVod.archiveLink}</p>
                     <p>IA archiver: {singleVod.archiver}</p>
                 </div>
@@ -227,6 +215,7 @@ export default function Home() {
     const paginationKey = Pagination(vodsPerPage, totalVods, currentPage);
 
     return (
+        
         <div className="">
         {/* pagination */}
         <div className="flex">
@@ -261,17 +250,16 @@ export default function Home() {
         {/* todo: make everything keyboard interactable*/}
         {/* todo: make screen size interactable + navbar slidable + ellipses text*/}
     
-    
                 <div className="border block " 
-                    onClick={() => {setSort("id")}}>id</div>
+                    onClick={setSort}>id</div>
                 <div className="border col-span-2"
-                    onClick={() => {setSort("dat")}}>date</div>
+                    onClick={setSort}>date</div>
                 <div className="border col-start-4 col-span-3"
-                    onClick={() => {setSort("crt")}}>creator</div >
+                    onClick={setSort}>creator</div >
                 <div className="border col-start-7 col-end-20 "
-                   onClick={() => {setSort("ttl")}} >title</div>
+                    onClick={setSort} >title</div>
                 <div className="border block"
-                    onClick={() => {setSort("alt")}}>isAlt</div>
+                    onClick={setSort}>isAlt</div>
                 {getCurrentVods(vodsPerPage, currentPage, vodsInUse).map((singleVod, index) => 
                     (MakeRow(singleVod, index)))}
  
