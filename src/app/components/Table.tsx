@@ -1,8 +1,10 @@
-import { useState } from "react";
-import vods from "../media/miniSheet";
+import { Dispatch, SetStateAction, useState } from "react";
+import { VodType } from "../page";
 
-
-export default function Table(vodsPerPage) {
+export default function Table( {vodsInUse, rowExpand, setRowExpand, currentPage, vodsPerPage } :
+                               {vodsInUse: VodType[], rowExpand: boolean[],
+                                   setRowExpand: Dispatch<SetStateAction<boolean[]>>,
+                                   currentPage: number, vodsPerPage: number } ) {
    /**
     const [ viewBy, setViewBy ] = useState("all");
     const [ sortBy, setSortBy ] = useState("pure chronological");
@@ -28,7 +30,6 @@ export default function Table(vodsPerPage) {
 
   function setSort(target: string) {
 
-    console.log(sortBy[0] + ", " + sortBy[1] + " | " + target);
     switch (target) {
       case "id":
         setSortBy({id: !sortBy.id, date: "un", creator: "un", title: "un", isAlt: "un"})
@@ -78,96 +79,84 @@ export default function Table(vodsPerPage) {
 
 
   {/* TODO: FIX ERRANEOUS BEHAVIOR WHEN MULTIPLE COLUMNS ARE SORTED */}
-  function sortTable( vodsInUse: VodsType, target: string ) {
+  function sortTable( vodsInUse: VodType[], target: string ) {
     console.log("sorting with: " + target);
     if (target != "id") {
       vodsInUse.sort((a, b) => a.id - b.id);
     } else
-      if (sortBy.id) {
-        vodsInUse.sort((a, b) => a.id - b.id);
-      } else {
-        vodsInUse.sort((a, b) => b.id - a.id);
+    if (sortBy.id) {
+      vodsInUse.sort((a, b) => a.id - b.id);
+    } else {
+      vodsInUse.sort((a, b) => b.id - a.id);
+    }
+
+    switch (target) {
+      case "date": {
+        console.log(sortBy.date)
+        // we are one cycle behind
+        if (sortBy.date == "desc") {
+          break;
+        }
+        if (sortBy.date == "asc") {
+          vodsInUse.sort((a, b) => {
+            return b.date.getTime() - a.date.getTime();
+          })
+        } else {
+          vodsInUse.sort((a, b) => {
+            return a.date.getTime() - b.date.getTime();
+          })
+        }
+        break;
       }
 
-      switch (target) {
+      case "creator": {
+        if (sortBy.creator == "desc") {
+          break;
+        }
+        vodsInUse.sort((a, b) => {
+          const tempA = a.creator.toUpperCase();
+          const tempB = b.creator.toUpperCase();
+          return sortBy.creator == "asc" ? (tempB.localeCompare(tempA)) : (tempA.localeCompare(tempB));
 
-        case "date": {
-          console.log(sortBy.date)
-          // we are one cycle behind
-          if (sortBy.date == "desc") {
-            break;
-          }
-          if (sortBy.date == "asc") {
-            vodsInUse.sort((a, b) => {
-              return b.date.getTime() - a.date.getTime();
-            })
+        })
+        break;
+      }
+
+      case "title": {
+        if (sortBy.title == "desc") {
+          break;
+        }
+        vodsInUse.sort((a, b) => {
+          const tempC = a.title.toUpperCase();
+          const tempD = b.title.toUpperCase();
+          return sortBy.title == "asc" ? (tempD.localeCompare(tempC)) : (tempC.localeCompare(tempD));
+
+        })
+        break;
+      }
+
+      case "alt": {
+        if (sortBy.isAlt == "desc") {
+          break;
+        }
+        vodsInUse.sort((a, b) => {
+          if ((a.isAlt && b.isAlt) || !(a.isAlt && b.isAlt)) {
+            return 0;
+          } else if (a.isAlt && !(b.isAlt)) {
+            return sortBy.isAlt == "un" ? 1 : -1;
           } else {
-            vodsInUse.sort((a, b) => {
-              return a.date.getTime() - b.date.getTime();
-            })
+            return sortBy.isAlt == "asc" ? -1 : 1;
           }
-          break;
-        }
-
-        case "creator": {
-          if (sortBy.creator == "desc") {
-            break;
-          }
-          vodsInUse.sort((a, b) => {
-            const tempA = a.creator.toUpperCase();
-            const tempB = b.creator.toUpperCase();
-            return sortBy.creator == "asc" ? (tempB.localeCompare(tempA)) : (tempA.localeCompare(tempB));
-
-          })
-          break;
-        }
-
-        case "title": {
-          if (sortBy.title == "desc") {
-            break;
-          }
-          vodsInUse.sort((a, b) => {
-            const tempC = a.title.toUpperCase();
-            const tempD = b.title.toUpperCase();
-            return sortBy.title == "asc" ? (tempD.localeCompare(tempC)) : (tempC.localeCompare(tempD));
-
-          })
-          break;
-        }
-
-        case "alt": {
-          if (sortBy.isAlt == "desc") {
-            break;
-
-          }
-          vodsInUse.sort((a, b) => {
-            if ((a.isAlt && b.isAlt) || !(a.isAlt && b.isAlt)) {
-              return 0;
-
-            } else if (a.isAlt && !(b.isAlt)) {
-              return sortBy.isAlt == "un" ? 1 : -1;
-
-            } else {
-              return sortBy.isAlt == "asc" ? -1 : 1;
-
-            }
-
-          })
-        }
-
+        })
       }
-
+    }
+    // end switch
   }
 
 
-  const initRowExpandStates : boolean[] = [];
-  for (let i = 0; i < vodsPerPage; i++) {
-    initRowExpandStates.push(false);
-  }
-  const [ rowExpand, setRowExpand ] = useState(initRowExpandStates);
 
   function changeRowStates(index: number) {
-    const  curRowExpandStates = rowExpand.slice(0);
+    const curRowExpandStates = rowExpand.slice(0);
     curRowExpandStates[index] = !rowExpand[index];
 
     setRowExpand(curRowExpandStates);
@@ -176,7 +165,7 @@ export default function Table(vodsPerPage) {
 
 
 
-  function MakeRow( singleVod: SingleVodType, index: number ) {
+  function MakeRow( singleVod: VodType, index: number ) {
     return [
       <div key={singleVod.id} className="grid grid-cols-20 col-span-20 ">
       <div onClick={() => {changeRowStates(index)}} 
@@ -190,28 +179,21 @@ export default function Table(vodsPerPage) {
       <div onClick={() => {changeRowStates(index)}}
       className="">{singleVod.isAlt.toString()}</div>
       </div>
-            ,
-          rowExpand[index] && singleVod.archiveLink && (
+      ,
+      rowExpand[index] && singleVod.archiveLink && (
 
+        /* MAKE FOR DIFFEERENT SCREEN SIZES */
+        <div key={singleVod.archiveLink} className="col-span-20">
+        <p className="">IA: {singleVod.archiveLink}</p>
+        <p>IA archiver: {singleVod.archiver}</p>
+        </div>
 
-            /* MAKE FOR DIFFEERENT SCREEN SIZES */
-            <div key={singleVod.archiveLink} className="col-span-20">
-            <p className="">IA: {singleVod.archiveLink}</p>
-            <p>IA archiver: {singleVod.archiver}</p>
-            </div>
-
-          )
+      )
     ]
   }
 
 
-  let totalPages = 61;
-  function getTotalPages( vodsPerPage: number ) {
-    totalPages = Math.round((totalVods / vodsPerPage)+1);
-  }
-
-
-  function getCurrentVods( vodsPerPage: number, currentPage: number, vodsInUse: VodsType ) {
+  function getCurrentVods( vodsPerPage: number, currentPage: number, vodsInUse: VodType[] ) {
     const displayedVods = [];
     for (let i=0;i<vodsPerPage;i++) {
       if (((vodsPerPage * (currentPage-1)) + i) <= vodsInUse.length-1) {
@@ -235,17 +217,23 @@ export default function Table(vodsPerPage) {
         <div className="border block " 
              onClick={() => setSort("id")}>id</div>
         <div className="border col-span-2"
-             onClick={() => setSort("date")}>date {sortBy.date == "asc" ? "asc" : "desc"}
+             onClick={() => setSort("date")}>date {sortBy.date == "asc" ? "asc" :
+                                                   sortBy.date == "desc" ? "desc" : "un"}
              {/*<span class="material-symbols-outlined">
             arrow_upward
           </span>*/}
         </div>
         <div className="border col-start-4 col-span-3"
-          onClick={() => setSort("creator")}>creator</div >
+          onClick={() => setSort("creator")}>creator {sortBy.creator == "asc" ? "asc" :
+                                                      sortBy.creator == "desc" ? "desc" : "un"}
+        </div >
         <div className="border col-start-7 col-end-20 "
-          onClick={() => setSort("title")} >title</div>
-        <div className="border block"
-          onClick={() => setSort("alt")}>isAlt</div>
+          onClick={() => setSort("title")} >title {sortBy.title == "asc" ? "asc" :
+                                                   sortBy.title == "desc" ? "desc" : "un"}
+        </div>
+        <div className="border block "
+          onClick={() => setSort("alt")}>isAlt {sortBy.isAlt == "asc" ? "asc" :
+                                                sortBy.isAlt == "desc" ? "desc" : "un"}</div>
         {getCurrentVods(vodsPerPage, currentPage, vodsInUse).map((singleVod, index) => 
         (MakeRow(singleVod, index)))}
 

@@ -1,7 +1,11 @@
 packages:
-  # include packages in subfolders (change as required)
-  - 'apps/**'
-  - 'packages/**'
-  # if required, exclude directories
+  - apps/**
+  - packages/**
   - '!**/test/**'
-
+allowBuilds:
+  '@tailwindcss/oxide': false
+  sharp: false
+  unrs-resolver: false
+overrides:
+  '@types/react': 19.2.17
+  '@types/react-dom': 19.2.3

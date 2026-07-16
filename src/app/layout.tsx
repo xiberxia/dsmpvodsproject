@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Navbar from "./components/navbar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,6 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <head> 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_upward" />
 
       </head>
       <body
@@ -36,7 +36,6 @@ export default function RootLayout({
         <div className="flex-grow">
           {children}
         </div>
-        <Navbar ></Navbar>    
       </body>
     </html>
   );
